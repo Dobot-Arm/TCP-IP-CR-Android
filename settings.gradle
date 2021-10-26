@@ -1,0 +1,5 @@
+include ':socket-client'
+include ':socket-common-interface'
+include ':socket-core'
+include ':app'
+rootProject.name = "CRTcpDemo"

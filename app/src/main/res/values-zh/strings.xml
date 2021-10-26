@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connect_robot">连接机器人</string>
+    <string name="change_power_on">上电</string>
+    <string name="change_power_off">下电</string>
+    <string name="enable">使能</string>
+    <string name="disable">下使能</string>
+    <string name="clear_alarm">清除报警</string>
+    <string name="speed_ratio_">速度比例:</string>
+    <string name="confirm">确认</string>
+    <string name="emergency_stop">急停</string>
+    <string name="move">运动</string>
+    <string name="stop">停止</string>
+    <string name="run_force_control_path_file_tips">运行带力控的轨迹文件,文件路径:</string>
+    <string name="set">设置</string>
+    <string name="get">获取</string>
+    <string name="io_index">IO索引</string>
+    <string name="is">为</string>
+    <string name="open_permission">请到设置中开启权限</string>
+    <string name="exit_app">退出应用</string>
+    <string name="notice_permission"> 没有权限 </string>
+    <string name="permission_text_camera"> 抱歉，需要相应权限才能运行。</string>
+    <string name="disconnect_robot">断开连接</string>
+    <string name="low">低</string>
+    <string name="high">高</string>
+    <string name="get_pos">获取当前笛卡尔坐标点</string>
+
+</resources>
