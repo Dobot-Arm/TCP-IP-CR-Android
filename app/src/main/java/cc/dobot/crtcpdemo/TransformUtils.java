@@ -315,4 +315,27 @@ public class TransformUtils {
 
     }
 
+
+
+    public static double bytesToDoubleBig(byte[] b) {
+        long l;
+        l = b[7];
+        l &= 0xff;
+        l |= ((long) b[6] << 8);
+        l &= 0xffff;
+        l |= ((long) b[5] << 16);
+        l &= 0xffffff;
+        l |= ((long) b[4] << 24);
+        l &= 0xffffffffl;
+        l |= ((long) b[3] << 32);
+        l &= 0xffffffffffl;
+        l |= ((long) b[2] << 40);
+        l &= 0xffffffffffffl;
+        l |= ((long) b[1] << 48);
+        l &= 0xffffffffffffffl;
+        l |= ((long) b[0] << 56);
+        return Double.longBitsToDouble(l);
+
+    }
+
 }

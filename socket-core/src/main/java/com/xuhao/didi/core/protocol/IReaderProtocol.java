@@ -23,4 +23,6 @@ public interface IReaderProtocol {
      * @return 开发者应该从此header种解析出包体长度数据.此值不应该是一个字面量定值, 应该是解析出来的一个数值.
      */
     int getBodyLength(byte[] header, ByteOrder byteOrder);
+
+    boolean isKnowLength();
 }

@@ -13,6 +13,9 @@ import cc.dobot.crtcpdemo.message.product.cr.CRMessageDOExecute;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageDisableRobot;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageEmergencyStop;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageEnableRobot;
+import cc.dobot.crtcpdemo.message.product.cr.CRMessageGetPathStartPose;
+import cc.dobot.crtcpdemo.message.product.cr.CRMessageGetPose;
+import cc.dobot.crtcpdemo.message.product.cr.CRMessageJointMovJ;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageMovJ;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageMovL;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageMoveJog;
@@ -83,6 +86,12 @@ public class MessageFactory {
                 return new CRMessageStartPath();
             case CmdSet.STOP_SCRIPT:
                 return new CRMessageStopScript();
+            case CmdSet.GET_PATH_START_POSE:
+                return new CRMessageGetPathStartPose();
+            case CmdSet.GET_POSE:
+                return new CRMessageGetPose();
+            case CmdSet.JOINT_MOV_J:
+                return new CRMessageJointMovJ();
         }
         return null;
     }

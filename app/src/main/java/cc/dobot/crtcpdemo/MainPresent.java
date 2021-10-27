@@ -5,6 +5,11 @@ import android.os.Looper;
 
 import com.xuhao.didi.core.pojo.OriginalData;
 
+import org.json.JSONObject;
+
+import java.nio.charset.Charset;
+import java.text.NumberFormat;
+
 import cc.dobot.crtcpdemo.client.APIMessageClient;
 import cc.dobot.crtcpdemo.client.MessageCallback;
 import cc.dobot.crtcpdemo.client.MoveMessageClient;
@@ -16,6 +21,9 @@ import cc.dobot.crtcpdemo.message.factory.MessageFactory;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageAccJ;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageAccL;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageDOExecute;
+import cc.dobot.crtcpdemo.message.product.cr.CRMessageGetPathStartPose;
+import cc.dobot.crtcpdemo.message.product.cr.CRMessageGetPose;
+import cc.dobot.crtcpdemo.message.product.cr.CRMessageJointMovJ;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageMovJ;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageMovL;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageMoveJog;
@@ -214,6 +222,7 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
         APIMessageClient.getInstance().sendMsg(message, new MessageCallback() {
             @Override
             public void onMsgCallback(MsgState state, OriginalData msg) {
+                System.out.println("movj enable msgState:" + state);
                 if (msg != null && state == MsgState.MSG_REPLY) {
                     CRMessageMovJ crMessageMovJ = (CRMessageMovJ) MessageFactory.getInstance().createMsg(CmdSet.MOV_J);
                     crMessageMovJ.setPoint(point);
@@ -249,12 +258,35 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
         APIMessageClient.getInstance().sendMsg(message, new MessageCallback() {
             @Override
             public void onMsgCallback(MsgState state, OriginalData msg) {
+                System.out.println("start path msgState:" + state);
                 if (msg != null && state == MsgState.MSG_REPLY) {
-                    CRMessageStartPath messageStartPath = (CRMessageStartPath) MessageFactory.getInstance().createMsg(CmdSet.START_PATH);
-                    messageStartPath.setTraceName(path);
-                    messageStartPath.setConst(1);
-                    messageStartPath.setCart(1);
-                    MoveMessageClient.getInstance().sendMsg(messageStartPath, null);
+                    CRMessageGetPathStartPose crMessageGetPathStartPose=(CRMessageGetPathStartPose)MessageFactory.getInstance().createMsg(CmdSet.GET_PATH_START_POSE);
+                    crMessageGetPathStartPose.setTraceName(path);
+                    APIMessageClient.getInstance().sendMsg(crMessageGetPathStartPose, new MessageCallback() {
+                        @Override
+                        public void onMsgCallback(MsgState state, OriginalData msg) {
+                            System.out.println("get path start pose:"+state);
+                            if (state==MsgState.MSG_REPLY)
+                            {
+                                String pathStartPoseStr=new String(msg.getTotalBytes(), Charset.forName("US-ASCII"));
+                                CRMessageJointMovJ crMessageJointMovJ=(CRMessageJointMovJ)MessageFactory.getInstance().createMsg(CmdSet.JOINT_MOV_J);
+                                crMessageJointMovJ.setMessageStringContent("JointMovJ("+pathStartPoseStr.substring(1,pathStartPoseStr.length()-1)+")");
+                                crMessageJointMovJ.setMessageContent(crMessageJointMovJ.getMessageStringContent().getBytes(Charset.forName("US-ASCII")));
+                                MoveMessageClient.getInstance().sendMsg(crMessageJointMovJ,null);
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        CRMessageStartPath messageStartPath = (CRMessageStartPath) MessageFactory.getInstance().createMsg(CmdSet.START_PATH);
+                                        messageStartPath.setTraceName(path);
+                                        messageStartPath.setConst(0);
+                                        messageStartPath.setCart(0);
+                                        MoveMessageClient.getInstance().sendMsg(messageStartPath, null);
+                                    }
+                                },3000);
+                            }
+                        }
+                    });
+                    /*    */
                 }
             }
         });

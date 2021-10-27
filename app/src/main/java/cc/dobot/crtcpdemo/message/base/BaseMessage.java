@@ -12,6 +12,15 @@ public abstract class BaseMessage implements ISendable {
     public BaseMessage() {
         constructSendData();
     }
+
+    public void setMessageContent(byte[] messageContent) {
+        this.messageContent = messageContent;
+    }
+
+    public void setMessageStringContent(String messageStrContent) {
+        this.messageStrContent = messageStrContent;
+    }
+
     public byte[] getMessageBytesContent(){
         return messageContent;
     }

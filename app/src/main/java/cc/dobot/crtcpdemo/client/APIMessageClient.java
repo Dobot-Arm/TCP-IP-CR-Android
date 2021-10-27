@@ -56,6 +56,11 @@ public class APIMessageClient extends TcpClient {
                 //     System.out.println("bodylength:" + TransformUtils.byteToShort(headParams.getCmdLength()));
                 return bodyLength - headLength;//*header.length*//*TcpClient.this.BODY_LENGTH;
             }
+
+            @Override
+            public boolean isKnowLength() {
+                return false;
+            }
         };
     }
 
@@ -107,6 +112,17 @@ public class APIMessageClient extends TcpClient {
                 //System.out.println("is reply msg");
                 return;
             }
+            else {
+                MessageCallback messageCallback = callbackTable.get(baseMessage);
+                writeMsgQueue.remove(baseMessage);
+                if (null != messageCallback) {
+                    messageCallback.onMsgCallback(MessageCallback.MsgState.MSG_REPLY, data);
+                }
+                callbackTable.remove(baseMessage);
+                //System.out.println("is reply msg");
+                return;
+            }
+
         }
     }
 
@@ -176,7 +192,6 @@ public class APIMessageClient extends TcpClient {
                         bodyLength = sendable.getReplySize();
                     else
                         bodyLength = sendable.parse().length;
-                    System.out.println("body length:"+bodyLength);
                     AlarmRunnable runnable = new AlarmRunnable();
                     // System.out.println("do send msg:"+TransformUtils.bytes2HexString(sendable.parse()));
                     runnable.setMsg(sendable);

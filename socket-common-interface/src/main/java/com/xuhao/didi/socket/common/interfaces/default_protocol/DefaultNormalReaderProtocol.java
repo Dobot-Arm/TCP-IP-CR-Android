@@ -24,4 +24,9 @@ public class DefaultNormalReaderProtocol implements IReaderProtocol {
         bb.order(byteOrder);
         return bb.getInt();
     }
+
+    @Override
+    public boolean isKnowLength() {
+        return false;
+    }
 }

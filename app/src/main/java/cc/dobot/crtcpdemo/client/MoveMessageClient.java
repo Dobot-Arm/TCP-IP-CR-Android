@@ -43,7 +43,7 @@ public class MoveMessageClient extends TcpClient {
             @Override
             public int getHeaderLength() {
                 //返回不能为零或负数的报文头长度(字节数)
-                return 2;
+                return 1;
             }
 
             @Override
@@ -51,7 +51,12 @@ public class MoveMessageClient extends TcpClient {
                 //根据header中payload的长度获取,此处加上尾校验码长度，防止第二次发送数据时库内buff没清空导致第二次数据返回解析异常
                 // System.out.println("get body length:"+header);
                 //     System.out.println("bodylength:" + TransformUtils.byteToShort(headParams.getCmdLength()));
-                return 1438;//*header.length*//*TcpClient.this.BODY_LENGTH;
+                return 0;//*header.length*//*TcpClient.this.BODY_LENGTH;
+            }
+
+            @Override
+            public boolean isKnowLength() {
+                return true;
             }
         };
         this.state = new RobotState();
@@ -81,46 +86,6 @@ public class MoveMessageClient extends TcpClient {
     //处理socket信息
     @Override
     public void handleReceiveMsg(OriginalData data) {
-        state.setDI(data.getSubBodyData(6, 14));
-        state.setDO(data.getSubBodyData(14, 22));
-        state.setMode(Robot.Mode.getMode((int) TransformUtils.bytesToLong(
-                data.getSubBodyData(54, 62), 0, true)));
-        state.setSpeedScaling((int) TransformUtils.bytesToLong(
-                data.getSubBodyData(62, 70), 0, true));
-        state.setProgramState((int) TransformUtils.bytesToLong(
-                data.getSubBodyData(102, 110), 0, true));
-        state.setqActual(
-                new double[]{
-                        TransformUtils.bytesToDouble(
-                                data.getSubBodyData(430, 438)),
-                        TransformUtils.bytesToDouble(
-                                data.getSubBodyData(438, 446)),
-                        TransformUtils.bytesToDouble(
-                                data.getSubBodyData(446, 454)),
-                        TransformUtils.bytesToDouble(
-                                data.getSubBodyData(454, 462)),
-                        TransformUtils.bytesToDouble(
-                                data.getSubBodyData(462, 470)),
-                        TransformUtils.bytesToDouble(
-                                data.getSubBodyData(470, 478))
-                }
-        );
-        state.setToolVectorActual(
-                new double[]{
-                        TransformUtils.bytesToDouble(
-                                data.getSubBodyData(622, 630)),
-                        TransformUtils.bytesToDouble(
-                                data.getSubBodyData(630, 638)),
-                        TransformUtils.bytesToDouble(
-                                data.getSubBodyData(638, 646)),
-                        TransformUtils.bytesToDouble(
-                                data.getSubBodyData(646, 654)),
-                        TransformUtils.bytesToDouble(
-                                data.getSubBodyData(654, 662)),
-                        TransformUtils.bytesToDouble(
-                                data.getSubBodyData(662, 670))
-                }
-        );
 
 /*        System.out.println("DI:" + TransformUtils.bytesToLong(
                 data.getSubBodyData(6, 14), 0, true));

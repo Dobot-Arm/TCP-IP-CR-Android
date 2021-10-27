@@ -14,6 +14,7 @@ public class CRMessageGetTraceStartPose extends BaseMessage {
     private String traceName="";
     @Override
     public void constructSendData() {
+        this.REPLY_SIZE=100;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             this.messageContent=("GetTraceStartPose("+traceName+")").getBytes(StandardCharsets.US_ASCII);
         }else
