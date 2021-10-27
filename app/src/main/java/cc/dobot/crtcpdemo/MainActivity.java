@@ -255,7 +255,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
             @Override
             public void onClick(View v) {
                 try {
-                    getIOSpinner.setSelection(present.getIO(Integer.parseInt(setIOEdit.getText().toString())));
+                    getIOSpinner.setSelection(present.getIO(Integer.parseInt(getIOEdit.getText().toString())));
                 } catch (Exception e) {
                     getIOSpinner.setSelection(present.getIO(1));
                 }
