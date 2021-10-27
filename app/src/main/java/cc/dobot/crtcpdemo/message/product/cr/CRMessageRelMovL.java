@@ -15,10 +15,10 @@ public class CRMessageRelMovL extends BaseMessage {
     @Override
     public void constructSendData() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            this.messageContent=("MovL("+offsetX+","+offsetY+","+offsetZ+")").getBytes(StandardCharsets.US_ASCII);
+            this.messageContent=("RelMovL("+offsetX+","+offsetY+","+offsetZ+")").getBytes(StandardCharsets.US_ASCII);
         }else
-            this.messageContent=("MovL("+offsetX+","+offsetY+","+offsetZ+")").getBytes( Charset.forName("US-ASCII"));
-        this.messageStrContent=("MovL("+offsetX+","+offsetY+","+offsetZ+")");
+            this.messageContent=("RelMovL("+offsetX+","+offsetY+","+offsetZ+")").getBytes( Charset.forName("US-ASCII"));
+        this.messageStrContent=("RelMovL("+offsetX+","+offsetY+","+offsetZ+")");
     }
 
     @Override

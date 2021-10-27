@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import cc.dobot.crtcpdemo.message.base.BaseMessage;
 
 public class CRMessageGetPose extends BaseMessage {
-    private static final String MESSAGE_CONTENT="GetAngle()";
+    private static final String MESSAGE_CONTENT="GetPose()";
     @Override
     public void constructSendData() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {

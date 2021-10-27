@@ -19,4 +19,5 @@ public interface CmdSet {
     String ACC_J = "AccJ";
     String ACC_L = "AccL";
     String ROBOT_MODE = "RobotMode";
+    String STOP_SCRIPT = "StopScript";
 }

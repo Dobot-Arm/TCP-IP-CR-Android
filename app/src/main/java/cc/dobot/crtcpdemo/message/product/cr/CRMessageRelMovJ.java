@@ -15,10 +15,10 @@ public class CRMessageRelMovJ extends BaseMessage {
     @Override
     public void constructSendData() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            this.messageContent=("JointMovJ("+offset1+","+offset2+","+offset3+","+offset4+","+offset5+","+offset6+")").getBytes(StandardCharsets.US_ASCII);
+            this.messageContent=("RelMovJ("+offset1+","+offset2+","+offset3+","+offset4+","+offset5+","+offset6+")").getBytes(StandardCharsets.US_ASCII);
         }else
-            this.messageContent=("JointMovJ("+offset1+","+offset2+","+offset3+","+offset4+","+offset5+","+offset6+")").getBytes( Charset.forName("US-ASCII"));
-        this.messageStrContent=("JointMovJ("+offset1+","+offset2+","+offset3+","+offset4+","+offset5+","+offset6+")");
+            this.messageContent=("RelMovJ("+offset1+","+offset2+","+offset3+","+offset4+","+offset5+","+offset6+")").getBytes( Charset.forName("US-ASCII"));
+        this.messageStrContent=("RelMovJ("+offset1+","+offset2+","+offset3+","+offset4+","+offset5+","+offset6+")");
     }
 
     @Override

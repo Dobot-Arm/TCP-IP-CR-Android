@@ -23,6 +23,7 @@ import cc.dobot.crtcpdemo.message.product.cr.CRMessageRobotMode;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageSetArmOrientation;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageSpeedFactor;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageStartPath;
+import cc.dobot.crtcpdemo.message.product.cr.CRMessageStopScript;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageTool;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageUser;
 
@@ -231,10 +232,33 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
     }
 
     @Override
-    public void startPathTrack(String path) {
-        CRMessageStartPath msg = (CRMessageStartPath) MessageFactory.getInstance().createMsg(CmdSet.START_PATH);
-        msg.setTraceName(path);
-        MoveMessageClient.getInstance().sendMsg(msg, null);
+    public void stopScript() {
+        CRMessageStopScript msg = (CRMessageStopScript) MessageFactory.getInstance().createMsg(CmdSet.STOP_SCRIPT);
+        APIMessageClient.getInstance().sendMsg(msg, new MessageCallback() {
+            @Override
+            public void onMsgCallback(MsgState state, OriginalData msg) {
+                System.out.println("stopScript msgState:" + state);
+            }
+        });
+    }
+
+    @Override
+    public void startPathTrack(final String path) {
+        BaseMessage message;
+        message = (BaseMessage) MessageFactory.getInstance().createMsg(CmdSet.ENABLE_ROBOT);
+        APIMessageClient.getInstance().sendMsg(message, new MessageCallback() {
+            @Override
+            public void onMsgCallback(MsgState state, OriginalData msg) {
+                if (msg != null && state == MsgState.MSG_REPLY) {
+                    CRMessageStartPath messageStartPath = (CRMessageStartPath) MessageFactory.getInstance().createMsg(CmdSet.START_PATH);
+                    messageStartPath.setTraceName(path);
+                    messageStartPath.setConst(1);
+                    messageStartPath.setCart(1);
+                    MoveMessageClient.getInstance().sendMsg(messageStartPath, null);
+                }
+            }
+        });
+
     }
 
     @Override

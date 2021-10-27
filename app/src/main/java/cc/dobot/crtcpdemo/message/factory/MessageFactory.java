@@ -20,6 +20,8 @@ import cc.dobot.crtcpdemo.message.product.cr.CRMessagePowerOn;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageRobotMode;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageSetArmOrientation;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageSpeedFactor;
+import cc.dobot.crtcpdemo.message.product.cr.CRMessageStartPath;
+import cc.dobot.crtcpdemo.message.product.cr.CRMessageStopScript;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageTool;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageUser;
 
@@ -77,6 +79,10 @@ public class MessageFactory {
                 return new CRMessageAccJ();
             case CmdSet.ACC_L:
                 return new CRMessageAccL();
+            case CmdSet.START_PATH:
+                return new CRMessageStartPath();
+            case CmdSet.STOP_SCRIPT:
+                return new CRMessageStopScript();
         }
         return null;
     }

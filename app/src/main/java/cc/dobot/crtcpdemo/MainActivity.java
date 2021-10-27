@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         moveStopBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                present.stopMove();
+                present.stopScript();
             }
         });
 
@@ -226,7 +226,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         pathStopBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                present.stopMove();
+                present.stopScript();
             }
         });
 

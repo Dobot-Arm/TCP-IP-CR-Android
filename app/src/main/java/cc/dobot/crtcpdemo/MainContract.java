@@ -44,6 +44,7 @@ public interface MainContract {
 
         void doMovJ(double[] point);
         void stopMove();
+        void stopScript();
 
         void startPathTrack(String path);
 
