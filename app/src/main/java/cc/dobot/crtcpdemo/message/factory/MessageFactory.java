@@ -7,6 +7,7 @@ import java.util.HashMap;
 import cc.dobot.crtcpdemo.message.constant.CmdSet;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageAccJ;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageAccL;
+import cc.dobot.crtcpdemo.message.product.cr.CRMessageAuto;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageClearError;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageDO;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageDOExecute;
@@ -16,6 +17,7 @@ import cc.dobot.crtcpdemo.message.product.cr.CRMessageEnableRobot;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageGetPathStartPose;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageGetPose;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageJointMovJ;
+import cc.dobot.crtcpdemo.message.product.cr.CRMessageManual;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageMovJ;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageMovL;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageMoveJog;
@@ -92,6 +94,10 @@ public class MessageFactory {
                 return new CRMessageGetPose();
             case CmdSet.JOINT_MOV_J:
                 return new CRMessageJointMovJ();
+            case CmdSet.AUTO:
+                return new CRMessageAuto();
+            case CmdSet.MANUAL:
+                return new CRMessageManual();
         }
         return null;
     }

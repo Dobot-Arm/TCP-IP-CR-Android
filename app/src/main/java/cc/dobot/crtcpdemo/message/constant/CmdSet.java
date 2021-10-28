@@ -23,4 +23,6 @@ public interface CmdSet {
     String GET_POSE = "GetPose";
     String GET_PATH_START_POSE = "GetPathStartPose";
     String JOINT_MOV_J = "JointMovJ";
+    String AUTO="Auto";
+    String MANUAL="Manual";
 }
