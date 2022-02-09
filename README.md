@@ -1,4 +1,4 @@
-English version of the README -> please [click here](/## DEMO documentation)
+English version of the README -> please [click here](/#demo-documentation)
 
 ## DEMO说明文档
 
