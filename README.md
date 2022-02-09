@@ -1,3 +1,5 @@
+English version of the README -> please [click here](/## DEMO documentation)
+
 ## DEMO说明文档
 
 本demo为Java 编写的给Android手机或平板使用TCP方式控制Dobot协作机器人CR(以下简称CR)的DEMO
