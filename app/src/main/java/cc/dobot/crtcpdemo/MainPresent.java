@@ -7,7 +7,6 @@ import com.xuhao.didi.core.pojo.OriginalData;
 
 import cc.dobot.crtcpdemo.client.APIMessageClient;
 import cc.dobot.crtcpdemo.client.MessageCallback;
-import cc.dobot.crtcpdemo.client.MoveMessageClient;
 import cc.dobot.crtcpdemo.client.StateMessageClient;
 import cc.dobot.crtcpdemo.message.base.BaseMessage;
 import cc.dobot.crtcpdemo.message.constant.CmdSet;
@@ -37,10 +36,10 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
 
     public MainPresent(MainContract.View view) {
         this.view = view;
-        StateMessageClient.getInstance().initTcp("192.168.1.6", 30004);
+        StateMessageClient.getInstance().initTcp("192.168.100.6", 30003);
         StateMessageClient.getInstance().setListener(this);
-        MoveMessageClient.getInstance().initTcp("192.168.1.6", 30003);
-        APIMessageClient.getInstance().initTcp("192.168.1.6", 29999);
+        //MoveMessageClient.getInstance().initTcp("192.168.100.6", 30003);
+        APIMessageClient.getInstance().initTcp("192.168.100.6", 29999);
     }
 
     @Override
@@ -51,7 +50,7 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
     @Override
     public void connectRobot() {
         StateMessageClient.getInstance().connect();
-        MoveMessageClient.getInstance().connect();
+        //MoveMessageClient.getInstance().connect();
         APIMessageClient.getInstance().connect();
         isConnect = true;
         isInit = true;
@@ -61,7 +60,7 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
     @Override
     public void disconnectRobot() {
         StateMessageClient.getInstance().disConnect();
-        MoveMessageClient.getInstance().disConnect();
+       // MoveMessageClient.getInstance().disConnect();
         APIMessageClient.getInstance().disConnect();
         isConnect = false;
         view.refreshConnectionState(isConnect);
@@ -214,10 +213,11 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
         APIMessageClient.getInstance().sendMsg(message, new MessageCallback() {
             @Override
             public void onMsgCallback(MsgState state, OriginalData msg) {
+                System.out.println("enable doMovJ:" + state);
                 if (msg != null && state == MsgState.MSG_REPLY) {
                     CRMessageMovJ crMessageMovJ = (CRMessageMovJ) MessageFactory.getInstance().createMsg(CmdSet.MOV_J);
                     crMessageMovJ.setPoint(point);
-                    MoveMessageClient.getInstance().sendMsg(crMessageMovJ, null);
+                    StateMessageClient.getInstance().sendMsg(crMessageMovJ, null);
                 }
             }
         });
@@ -228,7 +228,7 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
     public void stopMove() {
         CRMessageMoveJog msg = (CRMessageMoveJog) MessageFactory.getInstance().createMsg(CmdSet.MOVE_JOG);
         msg.setStop(true);
-        MoveMessageClient.getInstance().sendMsg(msg, null);
+        StateMessageClient.getInstance().sendMsg(msg, null);
     }
 
     @Override
@@ -254,7 +254,7 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
                     messageStartPath.setTraceName(path);
                     messageStartPath.setConst(1);
                     messageStartPath.setCart(1);
-                    MoveMessageClient.getInstance().sendMsg(messageStartPath, null);
+                    StateMessageClient.getInstance().sendMsg(messageStartPath, null);
                 }
             }
         });
@@ -328,7 +328,7 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
 
         CRMessageMoveJog msg = (CRMessageMoveJog) MessageFactory.getInstance().createMsg(CmdSet.MOVE_JOG);
         msg.setAxisID(jogStr);
-        MoveMessageClient.getInstance().sendMsg(msg, null);
+        StateMessageClient.getInstance().sendMsg(msg, null);
 
     }
 
