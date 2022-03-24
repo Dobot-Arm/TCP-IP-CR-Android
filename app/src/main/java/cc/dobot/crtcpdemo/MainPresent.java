@@ -1,24 +1,42 @@
 package cc.dobot.crtcpdemo;
 
+import android.os.FileUtils;
 import android.os.Handler;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.xuhao.didi.core.pojo.OriginalData;
 
-import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.nio.charset.Charset;
-import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import cc.dobot.crtcpdemo.client.APIMessageClient;
 import cc.dobot.crtcpdemo.client.MessageCallback;
 import cc.dobot.crtcpdemo.client.MoveMessageClient;
 import cc.dobot.crtcpdemo.client.StateMessageClient;
+import cc.dobot.crtcpdemo.data.AlarmArray;
+import cc.dobot.crtcpdemo.data.AlarmData;
+import cc.dobot.crtcpdemo.data.AlertJsonData;
 import cc.dobot.crtcpdemo.message.base.BaseMessage;
 import cc.dobot.crtcpdemo.message.constant.CmdSet;
+import cc.dobot.crtcpdemo.message.constant.Robot;
 import cc.dobot.crtcpdemo.message.factory.MessageFactory;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageClearError;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageDOExecute;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageEmergencyStop;
+import cc.dobot.crtcpdemo.message.product.cr.CRMessageGetErrorID;
+import cc.dobot.crtcpdemo.message.product.cr.CRMessageGetPathStartPose;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageJointMovJ;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageMovJ;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageMovL;
@@ -31,6 +49,9 @@ import cc.dobot.crtcpdemo.message.product.cr.CRMessageStopScript;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageTool;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageUser;
 
+import static cc.dobot.crtcpdemo.TransformUtils.transAlertJson2AlarmData;
+import static cc.dobot.crtcpdemo.TransformUtils.transServoAlertJson2AlarmData;
+
 public class MainPresent implements MainContract.Present, StateMessageClient.StateRefreshListener {
     Handler handler = new Handler();
     MainContract.View view;
@@ -39,8 +60,44 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
     boolean isEnable;
     boolean isInit = false;
 
+    public static final String ALARM_CONTROLLER_PATH ="alarm_controller.json";
+    public static final String ALARM_SERVO_PATH = "alarm_servo.json";
+
+    public ExecutorService transAlertLogExecutor = Executors.newSingleThreadExecutor();
+    //关于报错数据
+    List<AlarmData> dataList = new LinkedList<>();
+
+    List<String> controlErrorIdList = new LinkedList<>();
+    List<String> serverErrorIdList = new LinkedList<>();
+
+    //临时变量
+    List<String> tempControl = new LinkedList<>();
+    List<String> tempServer = new LinkedList<>();
+
+    private List<AlertJsonData> controllerJson = new ArrayList<>();
+
+    public List<AlertJsonData> getControllerJson() {
+        return controllerJson;
+    }
+
+    public void setControllerJson(List<AlertJsonData> controllerJson) {
+        this.controllerJson = controllerJson;
+    }
+
+    private List<AlertJsonData> serverJson = new ArrayList<>();
+
+    public List<AlertJsonData> getServerJson() {
+        return serverJson;
+    }
+
+    public void setServerJson(List<AlertJsonData> serverJson) {
+        this.serverJson = serverJson;
+    }
+
+
     public MainPresent(MainContract.View view) {
         this.view = view;
+        getAlarmJson();
 
     }
 
@@ -349,11 +406,9 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
                 System.out.println("start path  ENABLE_ROBOT msgState:" + state);
                 if (msg != null && state == MsgState.MSG_REPLY) {
                     view.refreshLogList(false,new String(msg.getTotalBytes()));
-                    MoveMessageClient.getInstance().sendMsg(messageStartPath, null);
                     CRMessageGetPathStartPose crMessageGetPathStartPose = (CRMessageGetPathStartPose) MessageFactory.getInstance().createMsg(CmdSet.GET_PATH_START_POSE);
                     crMessageGetPathStartPose.setTraceName(path);
                     view.refreshLogList(true,crMessageGetPathStartPose.getMessageStringContent());
-
                     APIMessageClient.getInstance().sendMsg(crMessageGetPathStartPose, new MessageCallback() {
                         @Override
                         public void onMsgCallback(MsgState state, OriginalData msg) {
@@ -464,6 +519,7 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
                         public void onMsgCallback(MsgState state, OriginalData originalData) {
                             System.out.println("JOG MANUAL msgState:" + state);
                             if (state == MsgState.MSG_REPLY) {
+                                view.refreshLogList(false,new String(originalData.getTotalBytes()));
                                 CRMessageMoveJog msg = (CRMessageMoveJog) MessageFactory.getInstance().createMsg(CmdSet.MOVE_JOG);
                                 msg.setAxisID(jogStr);
                                 view.refreshLogList(true,msg.getMessageStringContent());
@@ -482,12 +538,17 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
 
     }
 
+    boolean isSendErrorMsg=false;
     @Override
     public void onStateRefresh(final RobotState state) {
         handler.post(new Runnable() {
             @Override
             public void run() {
                 view.refreshRobotMode(state.getMode());
+                if (state.getMode()== Robot.Mode.ROBOT_MODE_ERROR&&dataList.size()==0&&!isSendErrorMsg)
+                    doGetErrorID();
+                else if (state.getMode()!= Robot.Mode.ROBOT_MODE_ERROR&&dataList.size()>0&&!isSendErrorMsg)
+                    doGetErrorID();
                 view.refreshSpeedScaling(state.getSpeedScaling());
                 view.refreshDI(state.getDI());
                 view.refreshDO(state.getDO());
@@ -499,6 +560,52 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
 
     }
 
+    private void doGetErrorID() {
+        isSendErrorMsg=true;
+        CRMessageGetErrorID messageGetErrorID=new CRMessageGetErrorID();
+        view.refreshLogList(true,messageGetErrorID.getMessageStringContent());
+        APIMessageClient.getInstance().sendMsg(messageGetErrorID, new MessageCallback() {
+            @Override
+            public void onMsgCallback(MsgState state, OriginalData msg) {
+                view.refreshLogList(false,"Get ErrorID:"+state.toString());
+                if (state== MsgState.MSG_REPLY){
+                    view.refreshLogList(false,new String(msg.getTotalBytes()));
+                    String errorID=new String(msg.getTotalBytes());
+                    int startErrorIDIndex=errorID.indexOf(",");
+                    int endErrorIDIndex=errorID.indexOf(",GetErrorID();");
+                    String subString=errorID.substring(startErrorIDIndex+1,endErrorIDIndex);
+                     startErrorIDIndex=errorID.indexOf("{");
+                     endErrorIDIndex=errorID.indexOf("}");
+                    subString=errorID.substring(startErrorIDIndex+1,endErrorIDIndex);
+                    subString="{\"alarms\":"+subString+"}";
+                    Gson gson=new Gson();
+                    AlarmArray alarmArray=gson.fromJson(subString,AlarmArray.class);
+                    if (diffAlarmsData(alarmArray.getAlarms()))
+                       /* serverErrorIdList.add("1:12832");
+                        serverErrorIdList.add("1:29572");
+                        serverErrorIdList.add("1:30080");
+                        serverErrorIdList.add("1:34322");*/
+                        setLogData(controlErrorIdList, serverErrorIdList);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            view.refreshAlarmList(dataList);
+                        }
+                    });
+                    isSendErrorMsg=false;
+                }
+                if (state==MsgState.MSG_REFUSE)
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            isSendErrorMsg=false;
+                        }
+                    },5000);
+
+            }
+        });
+    }
+
     @Override
     public double[] getCurrentCoordinate() {
         return StateMessageClient.getInstance().getState().getToolVectorActual();
@@ -507,5 +614,166 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
     @Override
     public double[] getCurrentJoint() {
         return StateMessageClient.getInstance().getState().getqActual();
+    }
+
+
+
+    private void setLogData(final List<String> controlErrorIdList, final List<String> serverErrorIdList) {
+        transAlertLogExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                //警报被清除
+                if (controlErrorIdList.size() == 0 && serverErrorIdList.size() == 0 && dataList.size() > 0) {
+                    dataList.clear();
+                } else if ((controlErrorIdList.size() > 0 || serverErrorIdList.size() > 0) && dataList.size() == 0) {
+                    //有警报
+                    transAlertJson2AlarmData(
+                            getControllerJson(),
+                            dataList,
+                            controlErrorIdList,
+                            true);
+                    transServoAlertJson2AlarmData(getServerJson(), dataList, serverErrorIdList);
+                } else //需要比较的情况
+                {
+                    List<AlarmData> tempDataList = new LinkedList<>();
+                    transAlertJson2AlarmData(
+                            getControllerJson(),
+                            tempDataList,
+                            controlErrorIdList,
+                            true);
+                    transServoAlertJson2AlarmData(getServerJson(), tempDataList, serverErrorIdList);
+                    dataList = tempDataList;
+                }
+                //dataList = transAlertJson2LogData(AppData.getInstance().getServerJson(), dataList, tempServer, false);
+                //AppData.getInstance().setLogDataList(dataList);
+            }
+        });
+
+    }
+
+
+    //对日志进行比较
+    private boolean diffAlarmsData(String[][] alarms) {
+        //当警报被清除本地还有的情况下
+        if (alarms == null && (controlErrorIdList.size() > 0 || serverErrorIdList.size() > 0)) {
+            controlErrorIdList.clear();
+            serverErrorIdList.clear();
+            return true;
+        } else if (alarms != null &&
+                controlErrorIdList.size() == 0 && serverErrorIdList.size() == 0) { //当有报警 本地没有的情况下
+            int i = 0;
+            for (String[] t : alarms) {
+                if (t != null) {
+                    if (i == 0) {
+                        Collections.addAll(controlErrorIdList, t);
+                    } else
+                        for (String s : t) {
+                            //添加关节辨识
+                            //  System.out.println("alarm:" + i + ":" + s);
+                            s = "" + i + ":" + s;
+                            serverErrorIdList.add(s);
+                        }
+                }
+                i++;
+            }
+            return true;
+        } else //当有报警本地也有 极少数情况下
+            if (alarms != null && (controlErrorIdList.size() > 0 || serverErrorIdList.size() > 0)) {
+                //先比较 后赋值
+                int isDiff = 0;
+                tempControl.clear();
+                tempServer.clear();
+                int i = 0;
+                for (String[] t : alarms) {
+                    if (t != null) {
+                        if (i == 0) {
+                            for (String s : t) {
+                                tempControl.add(s);
+                                if (!controlErrorIdList.contains(s)) {
+                                    isDiff += 1;
+                                }
+                            }
+                        } else
+                            for (String s : t) {
+                                //添加关节辨识
+                                //  System.out.println("alarm:" + i + ":" + s);
+                                s = "" + i + ":" + s;
+                                tempServer.add(s);
+                                if (!serverErrorIdList.contains(s)) {
+                                    isDiff += 2;
+                                }
+                            }
+                    }
+                    i++;
+                }
+                controlErrorIdList.clear();
+                serverErrorIdList.clear();
+                switch (isDiff) {
+                    case 0:
+                        return false;
+                    case 1:
+                        controlErrorIdList.addAll(tempControl);
+                        return true;
+                    case 2:
+                        serverErrorIdList.addAll(tempServer);
+                        return true;
+                    case 3:
+                        controlErrorIdList.addAll(tempControl);
+                        serverErrorIdList.addAll(tempServer);
+                        return true;
+                }
+            }
+
+        return false;
+    }
+
+    public void getAlarmJson() {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Gson gson = new GsonBuilder()
+                            .create();
+                    Type listType = new TypeToken<List<AlertJsonData>>() {
+                    }.getType();
+
+                    String jsonAlarmController = getAssetsFileString(ALARM_CONTROLLER_PATH);
+                    List<AlertJsonData> alarmControllerList = gson.fromJson(jsonAlarmController, listType);
+                    if (alarmControllerList != null)
+                       setControllerJson(alarmControllerList);
+
+                    String jsonAlarmServo = getAssetsFileString(ALARM_SERVO_PATH);
+                    List<AlertJsonData> alarmServoList = gson.fromJson(jsonAlarmServo, listType);
+                    if (alarmServoList != null)
+                        setServerJson(alarmServoList);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+    }
+
+
+    public static String getAssetsFileString(String path) {
+        StringBuffer buffer = new StringBuffer();
+        try {
+            InputStream is = AppDemo.getInstance().getApplicationContext().getAssets().open(path);
+            if (is != null) {
+                InputStreamReader inputreader = new InputStreamReader(is);
+                BufferedReader buffreader = new BufferedReader(inputreader);
+                String line;
+                //分行读取
+                int i = 1;
+                while ((line = buffreader.readLine()) != null) {
+                    buffer.append(line + "\n");
+                }
+            }
+            is.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return buffer.toString();
     }
 }

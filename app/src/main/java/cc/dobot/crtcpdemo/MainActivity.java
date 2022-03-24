@@ -36,12 +36,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 import cc.dobot.crtcpdemo.adapter.TextItemAdapter;
+import cc.dobot.crtcpdemo.data.AlarmData;
 import cc.dobot.crtcpdemo.message.constant.Robot;
 
 public class MainActivity extends AppCompatActivity implements MainContract.View, View.OnTouchListener {
     PermissionListener mListener;
     public static final String[] permissionArrays = new String[]{
             Manifest.permission.INTERNET,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE
     };
     Handler handler=new Handler();
 
@@ -96,7 +99,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         clearAlarm.setEnabled(b);
         speedRatioBTN.setEnabled(b);
         speedRatioEdit.setEnabled(b);
-
         moveStartBTN.setEnabled(b); moveLStartBTN.setEnabled(b); moveStopBTN.setEnabled(b); getPosBTN.setEnabled(b);
         jointMovJStartBTN.setEnabled(b); jointMovJStopBTN.setEnabled(b); getJointPosBTN.setEnabled(b);
         for (EditText edit:moveJEdit)
@@ -122,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         for (Button btn:coordPlusBtn)
             btn.setEnabled(b);
 
+        findViewById(R.id.button_clear_error_info_list).setEnabled(b);
     }
 
 
@@ -574,6 +577,14 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         errorListAdapter=new TextItemAdapter(errorList);
         errorListRV.setAdapter(errorListAdapter);
 
+        findViewById(R.id.button_clear_error_info_list).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                errorList.clear();
+                errorListAdapter.notifyDataSetChanged();
+            }
+        });
+
         logListRV=findViewById(R.id.log_list);
         logListRV.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         logList=new LinkedList<>();
@@ -858,4 +869,12 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
             }
         });
     };
+
+    @Override
+    public void refreshAlarmList(List<AlarmData> dataList) {
+        errorList.clear();
+        for (AlarmData data:dataList)
+            errorList.add(data.toString());
+        errorListAdapter.notifyDataSetChanged();
+    }
 }

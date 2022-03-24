@@ -1,9 +1,15 @@
 package cc.dobot.crtcpdemo;
 
+import android.os.Build;
+
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.List;
 import java.util.Locale;
+
+import cc.dobot.crtcpdemo.data.AlarmData;
+import cc.dobot.crtcpdemo.data.AlertJsonData;
 
 /**
  * Created by x on 2018/5/15.
@@ -336,6 +342,98 @@ public class TransformUtils {
         l |= ((long) b[0] << 56);
         return Double.longBitsToDouble(l);
 
+    }
+
+    /**
+     * 转换log日志json信息为数据化格式方法
+     *
+     * @param jsonList
+     * @param dataList
+     * @param idList
+     * @param isController
+     * @return
+     */
+    public static List transAlertJson2AlarmData(List<AlertJsonData> jsonList, List<AlarmData> dataList, List<String> idList, boolean isController) {
+        for (String id : idList) {
+            for (AlertJsonData data : jsonList) {
+                if (data.getId().equals(id)) {
+                    AlarmData alarmData;
+                    if (isController) {
+                        if (getLocalLanguage().equals(EN))
+                            alarmData = new AlarmData(id, "controller", data.getLevel(), data.getEn().getDescription(), data.getEn().getSolution());
+                        else if (getLocalLanguage().equals(ZH)) {
+                            alarmData = new AlarmData(id, "controller", data.getLevel(), data.getZh_CN().getDescription(), data.getZh_CN().getSolution());
+                        } else
+                            alarmData = new AlarmData(id, "controller", data.getLevel(), data.getEn().getDescription(), data.getEn().getSolution());
+                    } else {
+                        if (getLocalLanguage().equals(EN))
+                            alarmData = new AlarmData(id, "server", data.getLevel(), data.getEn().getDescription(), data.getEn().getSolution());
+                        else if (getLocalLanguage().equals(ZH)) {
+                            alarmData = new AlarmData(id, "server", data.getLevel(), data.getZh_CN().getDescription(), data.getZh_CN().getSolution());
+                        } else
+                            alarmData = new AlarmData(id, "server", data.getLevel(), data.getEn().getDescription(), data.getEn().getSolution());
+
+                    }
+                    dataList.add(alarmData);
+                }
+            }
+            boolean hasThis = false;
+            for (AlarmData alarmData : dataList) {
+                if (alarmData.getId().equals(id)) {
+                    hasThis = true;
+                    break;
+                }
+            }
+            if (!hasThis) {
+                dataList.add(new AlarmData(id, isController ? "controller" : "server"));
+            }
+        }
+
+
+        return dataList;
+    }
+
+    public static final String ZH="zh_CN";
+    public static final String EN="en";
+    public static String getLocalLanguage(){
+        Locale locale;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            locale = AppDemo.getInstance().getResources().getConfiguration().getLocales().get(0);
+        } else {
+            locale = AppDemo.getInstance().getResources().getConfiguration().locale;
+        }
+//或者仅仅使用 locale = Locale.getDefault(); 不需要考虑接口 deprecated(弃用)问题
+        String lang = locale.getLanguage();
+        return lang;
+    }
+
+    public static List transServoAlertJson2AlarmData(List<AlertJsonData> jsonList, List<AlarmData> dataList, List<String> idList) {
+        for (String id : idList) {
+            String temp[] = id.split(":");
+            for (AlertJsonData data : jsonList) {
+                if (data.getId().equals(temp[1])) {
+                    AlarmData alarmData;
+                    if (getLocalLanguage().equals(EN))
+                        alarmData = new AlarmData(temp[1], "server joint:" + temp[0], data.getLevel(), data.getEn().getDescription(), data.getEn().getSolution());
+                    else if (getLocalLanguage().equals(ZH)) {
+                        alarmData = new AlarmData(temp[1], "server joint:" + temp[0], data.getLevel(), data.getZh_CN().getDescription(), data.getZh_CN().getSolution());
+                    } else
+                        alarmData = new AlarmData(temp[1], "server joint:" + temp[0], data.getLevel(), data.getEn().getDescription(), data.getEn().getSolution());
+                    dataList.add(alarmData);
+                }
+            }
+            boolean hasThis = false;
+            for (AlarmData alarmData : dataList) {
+                if (alarmData.getId().equals(temp[1])) {
+                    hasThis = true;
+                    break;
+                }
+            }
+            if (!hasThis) {
+                dataList.add(new AlarmData(temp[1]));
+            }
+        }
+        return dataList;
     }
 
 }

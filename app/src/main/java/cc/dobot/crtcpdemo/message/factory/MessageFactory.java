@@ -14,6 +14,7 @@ import cc.dobot.crtcpdemo.message.product.cr.CRMessageDOExecute;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageDisableRobot;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageEmergencyStop;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageEnableRobot;
+import cc.dobot.crtcpdemo.message.product.cr.CRMessageGetErrorID;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageJointMovJ;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageGetPathStartPose;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageGetPose;
@@ -94,13 +95,12 @@ public class MessageFactory {
                 return new CRMessageStopScript();
             case CmdSet.RESET_ROBOT:
                 return new CRMessageResetRobot();
-
             case CmdSet.GET_PATH_START_POSE:
                 return new CRMessageGetPathStartPose();
             case CmdSet.GET_POSE:
                 return new CRMessageGetPose();
-            case CmdSet.JOINT_MOV_J:
-                return new CRMessageJointMovJ();
+            case CmdSet.GET_ERROR_ID:
+                return new CRMessageGetErrorID();
             case CmdSet.AUTO:
                 return new CRMessageAuto();
             case CmdSet.MANUAL:

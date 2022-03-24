@@ -1,5 +1,8 @@
 package cc.dobot.crtcpdemo;
 
+import java.util.List;
+
+import cc.dobot.crtcpdemo.data.AlarmData;
 import cc.dobot.crtcpdemo.message.constant.Robot;
 
 public interface MainContract {
@@ -27,6 +30,8 @@ public interface MainContract {
         void refreshErrorList(String errorInfo);
 
         void refreshLogList(boolean isSend,String log);
+
+        void refreshAlarmList(List<AlarmData> dataList);
     }
 
     interface Present{
