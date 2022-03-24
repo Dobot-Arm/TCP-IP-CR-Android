@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="robot_connect_tittle">机器人连接</string>
     <string name="connect_robot">连接机器人</string>
     <string name="change_power_on">上电</string>
     <string name="change_power_off">下电</string>
@@ -14,7 +15,7 @@
     <string name="run_force_control_path_file_tips">运行带力控的轨迹文件,文件路径:</string>
     <string name="set">设置</string>
     <string name="get">获取</string>
-    <string name="io_index">IO索引</string>
+    <string name="io_index">IO输出索引:</string>
     <string name="is">为</string>
     <string name="open_permission">请到设置中开启权限</string>
     <string name="exit_app">退出应用</string>
@@ -24,5 +25,27 @@
     <string name="low">低</string>
     <string name="high">高</string>
     <string name="get_pos">获取当前笛卡尔坐标点</string>
-
+    <string name="get_joint">获取当前关节坐标点</string>
+    <string name="ip_address">IP 地址:</string>
+    <string name="dashboard_port">仪表盘端口:</string>
+    <string name="move_port">运动指令端口:</string>
+    <string name="feedback_port">回馈端口:</string>
+    <string name="connect">连接</string>
+    <string name="disconnect">断开连接</string>
+    <string name="dashboard_function_tittle">仪表盘方法</string>
+    <string name="move_function_tittle">运动方法</string>
+    <string name="reset_robot">重置机器人</string>
+    <string name="movej">MovJ</string>
+    <string name="movel">MoveL</string>
+    <string name="joint_move_j">JointMovJ</string>
+    <string name="status">状态:</string>
+    <string name="feedback" >回馈(可滑动)</string>
+    <string name="current_speed_ratio_text">当前速率:</string>
+    <string name="robot_mode_text">机器人模式:</string>
+    <string name="error_info">错误信息</string>
+    <string name="log">日志</string>
+    <string name="digital_input_text">数字输入:</string>
+    <string name="digital_outputs_text">数字输出:</string>
+    <string name="send_msg">发送信息:</string>
+    <string name="receive_msg">收到信息:</string>
 </resources>

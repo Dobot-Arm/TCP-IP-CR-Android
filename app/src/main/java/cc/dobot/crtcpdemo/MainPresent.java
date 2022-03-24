@@ -1,7 +1,6 @@
 package cc.dobot.crtcpdemo;
 
 import android.os.Handler;
-import android.os.Looper;
 
 import com.xuhao.didi.core.pojo.OriginalData;
 
@@ -11,15 +10,15 @@ import cc.dobot.crtcpdemo.client.MoveMessageClient;
 import cc.dobot.crtcpdemo.client.StateMessageClient;
 import cc.dobot.crtcpdemo.message.base.BaseMessage;
 import cc.dobot.crtcpdemo.message.constant.CmdSet;
-import cc.dobot.crtcpdemo.message.constant.Robot;
 import cc.dobot.crtcpdemo.message.factory.MessageFactory;
-import cc.dobot.crtcpdemo.message.product.cr.CRMessageAccJ;
-import cc.dobot.crtcpdemo.message.product.cr.CRMessageAccL;
+import cc.dobot.crtcpdemo.message.product.cr.CRMessageClearError;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageDOExecute;
+import cc.dobot.crtcpdemo.message.product.cr.CRMessageEmergencyStop;
+import cc.dobot.crtcpdemo.message.product.cr.CRMessageJointMovJ;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageMovJ;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageMovL;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageMoveJog;
-import cc.dobot.crtcpdemo.message.product.cr.CRMessageRobotMode;
+import cc.dobot.crtcpdemo.message.product.cr.CRMessageResetRobot;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageSetArmOrientation;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageSpeedFactor;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageStartPath;
@@ -30,32 +29,35 @@ import cc.dobot.crtcpdemo.message.product.cr.CRMessageUser;
 public class MainPresent implements MainContract.Present, StateMessageClient.StateRefreshListener {
     Handler handler = new Handler();
     MainContract.View view;
-    boolean isConnect;
+    boolean isConnected;
     boolean isPowerOn;
     boolean isEnable;
     boolean isInit = false;
 
     public MainPresent(MainContract.View view) {
         this.view = view;
-        StateMessageClient.getInstance().initTcp("192.168.1.6", 30004);
+
+    }
+
+    @Override
+    public boolean isConnected() {
+        return isConnected;
+    }
+
+    @Override
+    public void connectRobot(String currentIP, int dashPort, int movePort, int feedBackPort) {
+
+        StateMessageClient.getInstance().initTcp(currentIP, feedBackPort);
         StateMessageClient.getInstance().setListener(this);
-        MoveMessageClient.getInstance().initTcp("192.168.1.6", 30003);
-        APIMessageClient.getInstance().initTcp("192.168.1.6", 29999);
-    }
-
-    @Override
-    public boolean isConnect() {
-        return isConnect;
-    }
-
-    @Override
-    public void connectRobot() {
+        MoveMessageClient.getInstance().initTcp(currentIP, movePort);
+        APIMessageClient.getInstance().initTcp(currentIP, dashPort);
         StateMessageClient.getInstance().connect();
         MoveMessageClient.getInstance().connect();
         APIMessageClient.getInstance().connect();
-        isConnect = true;
+        isConnected = true;
         isInit = true;
-        view.refreshConnectionState(isConnect);
+        view.refreshConnectionState(true);
+        view.refreshLogList(true,"Connect Robot");
     }
 
     @Override
@@ -63,8 +65,9 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
         StateMessageClient.getInstance().disConnect();
         MoveMessageClient.getInstance().disConnect();
         APIMessageClient.getInstance().disConnect();
-        isConnect = false;
-        view.refreshConnectionState(isConnect);
+        isConnected = false;
+        view.refreshConnectionState(false);
+        view.refreshLogList(true,"Disconnect Robot");
     }
 
     @Override
@@ -76,11 +79,14 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
     public void setRobotPower(final boolean powerOn) {
         BaseMessage message;
         message = (BaseMessage) MessageFactory.getInstance().createMsg(CmdSet.POWER_ON);
+        view.refreshLogList(true,message.getMessageStringContent());
         APIMessageClient.getInstance().sendMsg(message, new MessageCallback() {
             @Override
             public void onMsgCallback(MsgState state, OriginalData msg) {
                 isPowerOn = powerOn;
                 System.out.println("setRobotPower msgState:" + state);
+                if (msg!=null)
+                    view.refreshLogList(false,new String(msg.getTotalBytes()));
             }
         });
     }
@@ -99,11 +105,13 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
             message = (BaseMessage) MessageFactory.getInstance().createMsg(CmdSet.ENABLE_ROBOT);
         else
             message = (BaseMessage) MessageFactory.getInstance().createMsg(CmdSet.DISABLE_ROBOT);
+        view.refreshLogList(true,message.getMessageStringContent());
         APIMessageClient.getInstance().sendMsg(message, new MessageCallback() {
             @Override
             public void onMsgCallback(MsgState state, OriginalData msg) {
                 isEnable = enable;
                 if (msg != null && state == MsgState.MSG_REPLY) {
+                    view.refreshLogList(false,new String(msg.getTotalBytes()));
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -138,13 +146,30 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
         });
     }
 
+    @Override
+    public void resetRobot() {
+        CRMessageResetRobot crMessageResetRobot=(CRMessageResetRobot)MessageFactory.getInstance().createMsg(CmdSet.RESET_ROBOT);
+        view.refreshLogList(true,crMessageResetRobot.getMessageStringContent());
+        APIMessageClient.getInstance().sendMsg(crMessageResetRobot, new MessageCallback() {
+            @Override
+            public void onMsgCallback(MsgState state, OriginalData msg) {
+                System.out.println("setUser msgState:" + state);
+                if (msg!=null)
+                    view.refreshLogList(false,new String(msg.getTotalBytes()));
+            }
+        });
+    }
+
     private void setUser(int index) {
         CRMessageUser crMessageUser = (CRMessageUser) MessageFactory.getInstance().createMsg(CmdSet.USER);
         crMessageUser.setIndex(index);
+        view.refreshLogList(true,crMessageUser.getMessageStringContent());
         APIMessageClient.getInstance().sendMsg(crMessageUser, new MessageCallback() {
             @Override
             public void onMsgCallback(MsgState state, OriginalData msg) {
                 System.out.println("setUser msgState:" + state);
+                if (msg!=null)
+                    view.refreshLogList(false,new String(msg.getTotalBytes()));
             }
         });
     }
@@ -152,10 +177,13 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
     private void setTool(int index) {
         CRMessageTool crMessageTool = (CRMessageTool) MessageFactory.getInstance().createMsg(CmdSet.TOOL);
         crMessageTool.setIndex(index);
+        view.refreshLogList(true,crMessageTool.getMessageStringContent());
         APIMessageClient.getInstance().sendMsg(crMessageTool, new MessageCallback() {
             @Override
             public void onMsgCallback(MsgState state, OriginalData msg) {
                 System.out.println("setTool msgState:" + state);
+                if (msg!=null)
+                    view.refreshLogList(false,new String(msg.getTotalBytes()));
             }
         });
     }
@@ -167,20 +195,27 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
         crMessageSetArmOrientation.setUorD(d);
         crMessageSetArmOrientation.setForN(n);
         crMessageSetArmOrientation.setConfig6(cfg);
+        view.refreshLogList(true,crMessageSetArmOrientation.getMessageStringContent());
         APIMessageClient.getInstance().sendMsg(crMessageSetArmOrientation, new MessageCallback() {
             @Override
             public void onMsgCallback(MsgState state, OriginalData msg) {
                 System.out.println("setArmOrientation msgState:" + state);
+                if (msg!=null)
+                    view.refreshLogList(false,new String(msg.getTotalBytes()));
             }
         });
     }
 
     @Override
     public void clearAlarm() {
-        APIMessageClient.getInstance().sendMsg(MessageFactory.getInstance().createMsg(CmdSet.CLEAR_ERROR), new MessageCallback() {
+        CRMessageClearError crMessageClearError= (CRMessageClearError) MessageFactory.getInstance().createMsg(CmdSet.CLEAR_ERROR);
+        view.refreshLogList(true,crMessageClearError.getMessageStringContent());
+        APIMessageClient.getInstance().sendMsg(crMessageClearError, new MessageCallback() {
             @Override
             public void onMsgCallback(MsgState state, OriginalData msg) {
                 System.out.println("clearAlarm msgState:" + state);
+                if (msg!=null)
+                    view.refreshLogList(false,new String(msg.getTotalBytes()));
             }
         });
     }
@@ -189,20 +224,27 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
     public void setSpeedRatio(int speedRatio) {
         CRMessageSpeedFactor msg = (CRMessageSpeedFactor) MessageFactory.getInstance().createMsg(CmdSet.SPEED_FACTOR);
         msg.setRatio(speedRatio);
+        view.refreshLogList(true,msg.getMessageStringContent());
         APIMessageClient.getInstance().sendMsg(msg, new MessageCallback() {
             @Override
             public void onMsgCallback(MsgState state, OriginalData msg) {
                 System.out.println("setSpeedRatio msgState:" + state);
+                if (msg!=null)
+                    view.refreshLogList(false,new String(msg.getTotalBytes()));
             }
         });
     }
 
     @Override
     public void emergencyStop() {
-        APIMessageClient.getInstance().sendMsg(MessageFactory.getInstance().createMsg(CmdSet.EMERGENCY_STOP), new MessageCallback() {
+        CRMessageEmergencyStop msg= (CRMessageEmergencyStop) MessageFactory.getInstance().createMsg(CmdSet.EMERGENCY_STOP);
+        view.refreshLogList(true,msg.getMessageStringContent());
+        APIMessageClient.getInstance().sendMsg(msg, new MessageCallback() {
             @Override
             public void onMsgCallback(MsgState state, OriginalData msg) {
                 System.out.println("emergencyStop msgState:" + state);
+                if (msg!=null)
+                    view.refreshLogList(false,new String(msg.getTotalBytes()));
             }
         });
     }
@@ -211,13 +253,36 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
     public void doMovJ(final double[] point) {
         BaseMessage message;
         message = (BaseMessage) MessageFactory.getInstance().createMsg(CmdSet.ENABLE_ROBOT);
+        view.refreshLogList(true,message.getMessageStringContent());
         APIMessageClient.getInstance().sendMsg(message, new MessageCallback() {
             @Override
             public void onMsgCallback(MsgState state, OriginalData msg) {
                 if (msg != null && state == MsgState.MSG_REPLY) {
+                    view.refreshLogList(false,new String(msg.getTotalBytes()));
                     CRMessageMovJ crMessageMovJ = (CRMessageMovJ) MessageFactory.getInstance().createMsg(CmdSet.MOV_J);
                     crMessageMovJ.setPoint(point);
+                    view.refreshLogList(true,crMessageMovJ.getMessageStringContent());
                     MoveMessageClient.getInstance().sendMsg(crMessageMovJ, null);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void doMovL(final double[] point) {
+        BaseMessage message;
+        message = (BaseMessage) MessageFactory.getInstance().createMsg(CmdSet.ENABLE_ROBOT);
+        view.refreshLogList(true,message.getMessageStringContent());
+
+        APIMessageClient.getInstance().sendMsg(message, new MessageCallback() {
+            @Override
+            public void onMsgCallback(MsgState state, OriginalData msg) {
+                if (msg != null && state == MsgState.MSG_REPLY) {
+                    view.refreshLogList(false,new String(msg.getTotalBytes()));
+                    CRMessageMovL crMessageMovL = (CRMessageMovL) MessageFactory.getInstance().createMsg(CmdSet.MOV_L);
+                    crMessageMovL.setPoint(point);
+                    view.refreshLogList(true,crMessageMovL.getMessageStringContent());
+                    MoveMessageClient.getInstance().sendMsg(crMessageMovL, null);
                 }
             }
         });
@@ -225,19 +290,42 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
     }
 
     @Override
+    public void doJointMovJ(final double[] point) {
+        BaseMessage message;
+        message = (BaseMessage) MessageFactory.getInstance().createMsg(CmdSet.ENABLE_ROBOT);
+        view.refreshLogList(true,message.getMessageStringContent());
+        APIMessageClient.getInstance().sendMsg(message, new MessageCallback() {
+            @Override
+            public void onMsgCallback(MsgState state, OriginalData msg) {
+                if (msg != null && state == MsgState.MSG_REPLY) {
+                    view.refreshLogList(false,new String(msg.getTotalBytes()));
+                    CRMessageJointMovJ crMessageJointMovJ = (CRMessageJointMovJ) MessageFactory.getInstance().createMsg(CmdSet.JOINT_MOV_J);
+                    crMessageJointMovJ.setPoint(point);
+                    view.refreshLogList(true,crMessageJointMovJ.getMessageStringContent());
+                    MoveMessageClient.getInstance().sendMsg(crMessageJointMovJ, null);
+                }
+            }
+        });
+    }
+
+    @Override
     public void stopMove() {
         CRMessageMoveJog msg = (CRMessageMoveJog) MessageFactory.getInstance().createMsg(CmdSet.MOVE_JOG);
         msg.setStop(true);
+        view.refreshLogList(true,msg.getMessageStringContent());
         MoveMessageClient.getInstance().sendMsg(msg, null);
     }
 
     @Override
     public void stopScript() {
         CRMessageStopScript msg = (CRMessageStopScript) MessageFactory.getInstance().createMsg(CmdSet.STOP_SCRIPT);
+        view.refreshLogList(true,msg.getMessageStringContent());
         APIMessageClient.getInstance().sendMsg(msg, new MessageCallback() {
             @Override
             public void onMsgCallback(MsgState state, OriginalData msg) {
                 System.out.println("stopScript msgState:" + state);
+                if (msg!=null)
+                    view.refreshLogList(false,new String(msg.getTotalBytes()));
             }
         });
     }
@@ -246,14 +334,17 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
     public void startPathTrack(final String path) {
         BaseMessage message;
         message = (BaseMessage) MessageFactory.getInstance().createMsg(CmdSet.ENABLE_ROBOT);
+        view.refreshLogList(true,message.getMessageStringContent());
         APIMessageClient.getInstance().sendMsg(message, new MessageCallback() {
             @Override
             public void onMsgCallback(MsgState state, OriginalData msg) {
                 if (msg != null && state == MsgState.MSG_REPLY) {
+                    view.refreshLogList(false,new String(msg.getTotalBytes()));
                     CRMessageStartPath messageStartPath = (CRMessageStartPath) MessageFactory.getInstance().createMsg(CmdSet.START_PATH);
                     messageStartPath.setTraceName(path);
                     messageStartPath.setConst(1);
                     messageStartPath.setCart(1);
+                    view.refreshLogList(true,messageStartPath.getMessageStringContent());
                     MoveMessageClient.getInstance().sendMsg(messageStartPath, null);
                 }
             }
@@ -266,10 +357,13 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
         CRMessageDOExecute messageDO = (CRMessageDOExecute) MessageFactory.getInstance().createMsg(CmdSet.DO_EXECUTE);
         messageDO.setIndex(index);
         messageDO.setStatus(value);
+        view.refreshLogList(true,messageDO.getMessageStringContent());
         APIMessageClient.getInstance().sendMsg(messageDO, new MessageCallback() {
             @Override
             public void onMsgCallback(MsgState state, OriginalData msg) {
                 System.out.println("setIO msgState:" + state);
+                if (msg!=null)
+                    view.refreshLogList(false,new String(msg.getTotalBytes()));
             }
         });
     }
@@ -328,23 +422,35 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
 
         CRMessageMoveJog msg = (CRMessageMoveJog) MessageFactory.getInstance().createMsg(CmdSet.MOVE_JOG);
         msg.setAxisID(jogStr);
+        view.refreshLogList(true,msg.getMessageStringContent());
         MoveMessageClient.getInstance().sendMsg(msg, null);
 
     }
 
     @Override
     public void onStateRefresh(final RobotState state) {
-        view.refreshRobotMode(state.getMode());
-        view.refreshSpeedScaling(state.getSpeedScaling());
-        view.refreshDI(state.getDI());
-        view.refreshDO(state.getDO());
-        view.refreshProgramState(state.getProgramState());
-        view.refreshQActual(state.getqActual());
-        view.refreshToolVectorActual(state.getToolVectorActual());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                view.refreshRobotMode(state.getMode());
+                view.refreshSpeedScaling(state.getSpeedScaling());
+                view.refreshDI(state.getDI());
+                view.refreshDO(state.getDO());
+                view.refreshProgramState(state.getProgramState());
+                view.refreshQActual(state.getqActual());
+                view.refreshToolVectorActual(state.getToolVectorActual());
+            }
+        });
+
     }
 
     @Override
     public double[] getCurrentCoordinate() {
         return StateMessageClient.getInstance().getState().getToolVectorActual();
+    }
+
+    @Override
+    public double[] getCurrentJoint() {
+        return StateMessageClient.getInstance().getState().getqActual();
     }
 }

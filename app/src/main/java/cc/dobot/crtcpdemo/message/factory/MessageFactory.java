@@ -13,10 +13,12 @@ import cc.dobot.crtcpdemo.message.product.cr.CRMessageDOExecute;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageDisableRobot;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageEmergencyStop;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageEnableRobot;
+import cc.dobot.crtcpdemo.message.product.cr.CRMessageJointMovJ;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageMovJ;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageMovL;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageMoveJog;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessagePowerOn;
+import cc.dobot.crtcpdemo.message.product.cr.CRMessageResetRobot;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageRobotMode;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageSetArmOrientation;
 import cc.dobot.crtcpdemo.message.product.cr.CRMessageSpeedFactor;
@@ -46,7 +48,7 @@ public class MessageFactory {
     }
 
     public ISendable createMsg(String CMD_SET) {
-        switch (CMD_SET){
+        switch (CMD_SET) {
             case CmdSet.ENABLE_ROBOT:
                 return new CRMessageEnableRobot();
             case CmdSet.DISABLE_ROBOT:
@@ -65,6 +67,8 @@ public class MessageFactory {
                 return new CRMessageMovL();
             case CmdSet.MOV_J:
                 return new CRMessageMovJ();
+            case CmdSet.JOINT_MOV_J:
+                return new CRMessageJointMovJ();
             case CmdSet.MOVE_JOG:
                 return new CRMessageMoveJog();
             case CmdSet.DO_EXECUTE:
@@ -83,6 +87,9 @@ public class MessageFactory {
                 return new CRMessageStartPath();
             case CmdSet.STOP_SCRIPT:
                 return new CRMessageStopScript();
+            case CmdSet.RESET_ROBOT:
+                return new CRMessageResetRobot();
+
         }
         return null;
     }

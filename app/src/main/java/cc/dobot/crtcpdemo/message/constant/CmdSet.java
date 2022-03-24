@@ -3,12 +3,14 @@ package cc.dobot.crtcpdemo.message.constant;
 public interface CmdSet {
     String ENABLE_ROBOT = "EnableRobot";
     String DISABLE_ROBOT = "DisableRobot";
+    String RESET_ROBOT = "ResetRobot";
     String POWER_ON = "PowerOn";
     String CLEAR_ERROR = "ClearError";
     String EMERGENCY_STOP = "EmergencyStop";
     String SPEED_FACTOR = "SpeedFactor";
     String MOV_J = "MovJ";
     String MOV_L = "MovL";
+    String JOINT_MOV_J = "JointMovJ";
     String MOVE_JOG = "MoveJog";
     String START_PATH = "StartPath";
     String DO = "DO";

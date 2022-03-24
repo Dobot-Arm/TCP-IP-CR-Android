@@ -23,11 +23,15 @@ public interface MainContract {
         void refreshToolVectorActual(double[] toolVectorActual);
 
         void refreshProgramState(int programState);
+
+        void refreshErrorList(String errorInfo);
+
+        void refreshLogList(boolean isSend,String log);
     }
 
     interface Present{
-        boolean isConnect();
-        void connectRobot();
+        boolean isConnected();
+        void connectRobot(String currentIP, int dashPort, int movePort, int feedBackPort);
         void disconnectRobot();
 
         boolean isPowerOn();
@@ -35,6 +39,7 @@ public interface MainContract {
 
         boolean isEnable();
         void setRobotEnable(boolean enable);
+        void resetRobot();
 
         void clearAlarm();
 
@@ -43,6 +48,10 @@ public interface MainContract {
         void emergencyStop();
 
         void doMovJ(double[] point);
+        void doMovL(double[] point);
+
+        void doJointMovJ(double[] point);
+
         void stopMove();
         void stopScript();
 
@@ -54,5 +63,11 @@ public interface MainContract {
         void setJogMove(boolean isCoordinate,int pos);
 
         double[] getCurrentCoordinate();
+
+
+        double[] getCurrentJoint();
+
+
+
     }
 }

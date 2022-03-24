@@ -1,0 +1,1036 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <TextView
+        android:id="@+id/robot_connect_tittle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/robot_connect_tittle"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+
+        />
+    <TextView
+        android:id="@+id/ip_address_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/ip_address"
+        app:layout_constraintTop_toBottomOf="@+id/robot_connect_tittle"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginTop="6dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginStart="6dp" />
+    <EditText
+        android:id="@+id/ip_address_edit"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="6dp"
+        android:inputType="number"
+        android:digits="0123456789."
+        app:layout_constraintLeft_toRightOf="@+id/ip_address_text"
+        app:layout_constraintTop_toTopOf="@id/ip_address_text"
+        app:layout_constraintBottom_toBottomOf="@id/ip_address_text"
+        android:layout_marginStart="6dp" />
+
+    <TextView
+        android:id="@+id/dashboard_port_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/dashboard_port"
+        app:layout_constraintTop_toBottomOf="@+id/robot_connect_tittle"
+        app:layout_constraintLeft_toRightOf="@id/ip_address_edit"
+        android:layout_marginTop="6dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginStart="12dp" />
+    <EditText
+        android:id="@+id/dashboard_port_edit"
+        android:layout_width="80dp"
+        android:inputType="number"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="6dp"
+        app:layout_constraintLeft_toRightOf="@+id/dashboard_port_text"
+        app:layout_constraintTop_toTopOf="@id/dashboard_port_text"
+        app:layout_constraintBottom_toBottomOf="@id/dashboard_port_text"
+        android:layout_marginStart="6dp" />
+
+    <TextView
+        android:id="@+id/move_port_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/move_port"
+        app:layout_constraintTop_toBottomOf="@+id/robot_connect_tittle"
+        app:layout_constraintLeft_toRightOf="@id/dashboard_port_edit"
+        android:layout_marginTop="6dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginStart="6dp" />
+    <EditText
+        android:id="@+id/move_port_edit"
+        android:layout_width="80dp"
+        android:inputType="number"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="6dp"
+        app:layout_constraintLeft_toRightOf="@+id/move_port_text"
+        app:layout_constraintTop_toTopOf="@id/ip_address_text"
+        app:layout_constraintBottom_toBottomOf="@id/ip_address_text"
+        android:layout_marginStart="6dp" />
+
+    <TextView
+        android:id="@+id/feedback_port_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/feedback_port"
+        app:layout_constraintTop_toBottomOf="@+id/robot_connect_tittle"
+        app:layout_constraintLeft_toRightOf="@id/move_port_edit"
+        android:layout_marginTop="6dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginStart="6dp" />
+    <EditText
+        android:id="@+id/feedback_port_edit"
+        android:layout_width="80dp"
+        android:inputType="number"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="6dp"
+        app:layout_constraintLeft_toRightOf="@+id/feedback_port_text"
+        app:layout_constraintTop_toTopOf="@id/ip_address_text"
+        app:layout_constraintBottom_toBottomOf="@id/ip_address_text"
+        android:layout_marginStart="6dp" />
+
+    <Button
+        android:id="@+id/button_connect_robot"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/ip_address_text"
+        app:layout_constraintBottom_toBottomOf="@id/ip_address_text"
+        android:layout_marginEnd="6dp"
+        app:layout_constraintLeft_toRightOf="@+id/feedback_port_edit"
+        android:text="@string/connect"
+        android:layout_marginRight="6dp" />
+
+    <TextView
+        android:id="@+id/dashboard_function_tittle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/dashboard_function_tittle"
+        app:layout_constraintTop_toBottomOf="@+id/button_connect_robot"
+        app:layout_constraintLeft_toLeftOf="parent"
+
+        />
+
+    <Button
+        android:id="@+id/button_change_enable"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/dashboard_function_tittle"
+        android:layout_marginTop="6dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:text="@string/enable"
+        android:layout_marginLeft="6dp"
+        android:layout_marginStart="6dp" />
+
+
+
+    <Button
+        android:id="@+id/button_reset_robot"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/dashboard_function_tittle"
+        android:layout_marginTop="6dp"
+        app:layout_constraintLeft_toRightOf="@id/button_change_enable"
+        android:text="@string/reset_robot"
+        android:layout_marginLeft="12dp"
+        android:layout_marginStart="12dp" />
+
+    <Button
+        android:id="@+id/button_clear_alarm"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/dashboard_function_tittle"
+        android:layout_marginTop="6dp"
+        app:layout_constraintLeft_toRightOf="@id/button_reset_robot"
+        android:text="@string/clear_alarm"
+        android:layout_marginLeft="12dp"
+        android:layout_marginStart="12dp" />
+
+    <TextView
+        android:id="@+id/text_speed_ratio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/speed_ratio_"
+        app:layout_constraintBottom_toBottomOf="@+id/button_change_enable"
+        app:layout_constraintLeft_toRightOf="@id/button_clear_alarm"
+        android:layout_marginLeft="12dp"
+        android:layout_marginStart="12dp"
+        app:layout_constraintTop_toBottomOf="@+id/dashboard_function_tittle" />
+
+    <EditText
+        android:id="@+id/edit_speed_ratio"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="6dp"
+        android:layout_marginStart="6dp"
+        android:inputType="number"
+        android:text="50"
+        app:layout_constraintBottom_toBottomOf="@+id/text_speed_ratio"
+        app:layout_constraintLeft_toRightOf="@+id/feedback_port_text"
+        app:layout_constraintStart_toEndOf="@+id/text_speed_ratio"
+        app:layout_constraintTop_toTopOf="@+id/text_speed_ratio" />
+
+    <Button
+        android:id="@+id/button_speed_ratio"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginStart="12dp"
+        android:text="@string/confirm"
+        app:layout_constraintLeft_toRightOf="@id/button_reset_robot"
+        app:layout_constraintStart_toEndOf="@+id/edit_speed_ratio"
+        app:layout_constraintTop_toBottomOf="@id/dashboard_function_tittle" />
+    <LinearLayout
+android:id="@+id/digital_output_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        app:layout_constraintTop_toBottomOf="@+id/button_change_enable"
+
+        android:orientation="horizontal">
+
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/io_index" />
+
+        <EditText
+            android:id="@+id/set_io_edit"
+            android:text="1"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:inputType="number" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/status" />
+
+        <Spinner
+            android:id="@+id/set_io_spinner"
+            android:background="#CDCDCD"
+            android:layout_width="100dp"
+            android:layout_height="40dp" />
+
+        <Button
+            android:id="@+id/set_io_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/confirm" />
+        <!--  <Button
+              android:id="@+id/get_io_button"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="@string/get" />
+
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="@string/io_index" />
+
+          <EditText
+              android:id="@+id/get_io_edit"
+              android:text="1"
+              android:layout_width="80dp"
+              android:layout_height="wrap_content"
+              android:inputType="number" />
+
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="@string/is" />
+
+          <Spinner
+              android:id="@+id/get_io_spinner"
+              android:background="#fff"
+              android:layout_width="80dp"
+              android:layout_height="40dp" />-->
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/motion_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/digital_output_layout"
+
+        >
+        <TextView
+            android:text="@string/move_function_tittle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:text="X" />
+
+            <EditText
+                android:id="@+id/move_j_x_edit"
+                android:inputType="numberDecimal|numberSigned"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Y" />
+
+            <EditText
+                android:id="@+id/move_j_y_edit"
+                android:layout_width="80dp"
+                android:inputType="numberDecimal|numberSigned"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Z" />
+
+            <EditText
+                android:id="@+id/move_j_z_edit"
+                android:layout_width="80dp"
+                android:inputType="numberDecimal|numberSigned"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="RX" />
+
+            <EditText
+                android:id="@+id/move_j_rx_edit"
+                android:layout_width="80dp"
+                android:inputType="numberDecimal|numberSigned"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="RY" />
+
+            <EditText
+                android:id="@+id/move_j_ry_edit"
+                android:layout_width="80dp"
+                android:inputType="numberDecimal|numberSigned"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="RZ" />
+
+            <EditText
+                android:id="@+id/move_j_rz_edit"
+                android:layout_width="80dp"
+                android:inputType="numberDecimal|numberSigned"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/move_j_move_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/movej" />
+
+            <Button
+                android:id="@+id/move_l_move_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/movel" />
+
+            <Button
+                android:id="@+id/get_pos_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/get_pos"
+                />
+
+            <Button
+                android:id="@+id/move_j_stop_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/stop" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:text="J1" />
+
+            <EditText
+                android:id="@+id/joint_move_j_j1_edit"
+                android:inputType="numberDecimal|numberSigned"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="J2" />
+
+            <EditText
+                android:id="@+id/joint_move_j_j2_edit"
+                android:layout_width="80dp"
+                android:inputType="numberDecimal|numberSigned"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="J3" />
+
+            <EditText
+                android:id="@+id/joint_move_j_j3_edit"
+                android:layout_width="80dp"
+                android:inputType="numberDecimal|numberSigned"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="J4" />
+
+            <EditText
+                android:id="@+id/joint_move_j_j4_edit"
+                android:layout_width="80dp"
+                android:inputType="numberDecimal|numberSigned"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="J5" />
+
+            <EditText
+                android:id="@+id/joint_move_j_j5_edit"
+                android:layout_width="80dp"
+                android:inputType="numberDecimal|numberSigned"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="J6" />
+
+            <EditText
+                android:id="@+id/joint_move_j_j6_edit"
+                android:layout_width="80dp"
+                android:inputType="numberDecimal|numberSigned"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/joint_move_j_move_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/joint_move_j" />
+
+            <Button
+                android:id="@+id/get_joint_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/get_joint"
+                />
+
+
+            <Button
+                android:id="@+id/joint_move_j_stop_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/stop" />
+
+        </LinearLayout>
+
+
+
+
+      <!--  <LinearLayout
+            android:id="@+id/trace_layout"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/run_force_control_path_file_tips" />
+
+            <EditText
+                android:id="@+id/trace_file_path"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/trace_start_path"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/move" />
+
+            <Button
+                android:id="@+id/trace_stop_path"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/stop" />
+        </LinearLayout>-->
+    </LinearLayout>
+    <TextView
+        android:id="@+id/feedback_tittle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:text="@string/feedback"
+        app:layout_constraintTop_toBottomOf="@id/motion_layout"
+        app:layout_constraintBottom_toTopOf="@+id/feedback_layout"
+        />
+    <LinearLayout
+        android:id="@+id/feedback_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/feedback_tittle"
+        app:layout_constraintBottom_toBottomOf="parent"
+      >
+
+        <cc.dobot.crtcpdemo.widget.HVScrollView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="4"
+          >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/speed_scaling_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="@string/current_speed_ratio_text" />
+
+            <TextView
+                android:id="@+id/robot_mode_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="@string/robot_mode_text" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/jog_j1_minus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="J1-" />
+                <TextView
+                    android:id="@+id/jog_j1_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="J1:0.0" />
+                <Button
+                    android:id="@+id/jog_j1_plus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="J1+" />
+                <Button
+                    android:id="@+id/coordinate_x_plus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="X+" />
+                <TextView
+                    android:id="@+id/coordinate_x_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="X:0.0" />
+                <Button
+                    android:id="@+id/coordinate_x_minus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="X-" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/jog_j2_minus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="J2-" />
+                <TextView
+                    android:id="@+id/jog_j2_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="J2:0.0" />
+                <Button
+                    android:id="@+id/jog_j2_plus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="J2+" />
+                <Button
+                    android:id="@+id/coordinate_y_plus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Y+" />
+                <TextView
+                    android:id="@+id/coordinate_y_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Y:0.0" />
+                <Button
+                    android:id="@+id/coordinate_y_minus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Y-" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/jog_j3_minus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="J3-" />
+                <TextView
+                    android:id="@+id/jog_j3_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="J3:0.0" />
+                <Button
+                    android:id="@+id/jog_j3_plus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="J3+" />
+                <Button
+                    android:id="@+id/coordinate_z_plus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Z+" />
+                <TextView
+                    android:id="@+id/coordinate_z_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Z:0.0" />
+                <Button
+                    android:id="@+id/coordinate_z_minus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Z-" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/jog_j4_minus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="J4-" />
+                <TextView
+                    android:id="@+id/jog_j4_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="J4:0.0" />
+                <Button
+                    android:id="@+id/jog_j4_plus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="J4+" />
+                <Button
+                    android:id="@+id/coordinate_rx_plus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="RX+" />
+                <TextView
+                    android:id="@+id/coordinate_rx_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="RX:0.0" />
+                <Button
+                    android:id="@+id/coordinate_rx_minus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="RX-" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/jog_j5_minus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="J5-" />
+                <TextView
+                    android:id="@+id/jog_j5_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="J5:0.0" />
+                <Button
+                    android:id="@+id/jog_j5_plus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="J5+" />
+                <Button
+                    android:id="@+id/coordinate_ry_plus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="RY+" />
+                <TextView
+                    android:id="@+id/coordinate_ry_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="RY:0.0" />
+                <Button
+                    android:id="@+id/coordinate_ry_minus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ry-" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/jog_j6_minus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="J6-" />
+                <TextView
+                    android:id="@+id/jog_j6_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="J6:0.0" />
+                <Button
+                    android:id="@+id/jog_j6_plus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="J6+" />
+                <Button
+                    android:id="@+id/coordinate_rz_plus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="RZ+" />
+                <TextView
+                    android:id="@+id/coordinate_rz_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="RZ:0.0" />
+                <Button
+                    android:id="@+id/coordinate_rz_minus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="RZ-" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/digital_input_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Digital input:" />
+
+            <TextView
+                android:id="@+id/digital_output_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Digital output:" />
+
+
+           <!-- <TextView
+                android:id="@+id/program_state_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center"
+                android:text="Program state:" />
+
+            <TextView
+                android:id="@+id/digital_input_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center"
+                android:text="Digital input:" />
+
+            <TextView
+                android:id="@+id/digital_output_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center"
+                android:text="Digital output:" />
+
+            <TextView
+                android:id="@+id/q_actual_text"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="6dp"
+                android:gravity="center"
+                android:text="q actual:" />
+
+            <TextView
+                android:id="@+id/tool_vector_actual_text"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="6dp"
+                android:gravity="center"
+                android:text="Tool vector actual:" />-->
+            </LinearLayout>
+        </cc.dobot.crtcpdemo.widget.HVScrollView>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2">
+        <TextView
+            android:id="@+id/error_info_tittle_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/error_info"
+            android:layout_marginTop="6dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/error_info_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/error_info_tittle_text"
+            app:layout_constraintBottom_toTopOf="@+id/button_clear_error_info_list"
+            />
+
+        <Button
+            android:id="@+id/button_clear_error_info_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/clear_alarm"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/log"
+            />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/log_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+          <!--  <com.google.android.material.tabs.TabLayout
+                android:id="@+id/jog_move_tab"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="joint" />
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="coordinate" />
+            </com.google.android.material.tabs.TabLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/jog_j1_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="J1" />
+
+                <Button
+                    android:id="@+id/jog_j1_plus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+" />
+
+                <Button
+                    android:id="@+id/jog_j1_minus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="-" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/jog_j2_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="J2" />
+
+                <Button
+                    android:id="@+id/jog_j2_plus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+" />
+
+                <Button
+                    android:id="@+id/jog_j2_minus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="-" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/jog_j3_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="J3" />
+
+                <Button
+                    android:id="@+id/jog_j3_plus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+" />
+
+                <Button
+                    android:id="@+id/jog_j3_minus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="-" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/jog_j4_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="J4" />
+
+                <Button
+                    android:id="@+id/jog_j4_plus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+" />
+
+                <Button
+                    android:id="@+id/jog_j4_minus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="-" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/jog_j5_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="J5" />
+
+                <Button
+                    android:id="@+id/jog_j5_plus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+" />
+
+                <Button
+                    android:id="@+id/jog_j5_minus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="-" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/jog_j6_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="J6" />
+
+                <Button
+                    android:id="@+id/jog_j6_plus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+" />
+
+                <Button
+                    android:id="@+id/jog_j6_minus_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="-" />
+            </LinearLayout>-->
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
