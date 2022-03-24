@@ -24,6 +24,8 @@ public class ReaderImpl extends AbsReader {
         IReaderProtocol headerProtocol = mOkOptions.getReaderProtocol();
         int headerLength = headerProtocol.getHeaderLength();
         ByteBuffer headBuf = ByteBuffer.allocate(headerLength);
+       /* ByteBuffer tempBuff = ByteBuffer.allocate(1024*30);
+        readBufferFromChanel(tempBuff);*/
         headBuf.order(mOkOptions.getReadByteOrder());
         try {
             if (mRemainingBuf != null) {
@@ -75,7 +77,9 @@ public class ReaderImpl extends AbsReader {
                             mRemainingBuf = null;
                         }
                         //cause this time data from remaining buffer not from channel.
-                        originalData.setBodyBytes(byteBuffer.array());
+                        byte bodyBytes[]=new byte[byteBuffer.position()];
+                        System.arraycopy(byteBuffer.array(),0,bodyBytes,0,bodyBytes.length);
+                        originalData.setBodyBytes(bodyBytes);
                         mStateSender.sendBroadcast(IOAction.ACTION_READ_COMPLETE, originalData);
                         return;
                     } else {//there are no data left in buffer and some data pieces in channel
@@ -83,7 +87,9 @@ public class ReaderImpl extends AbsReader {
                     }
                 }
                 readBodyFromChannel(byteBuffer);
-                originalData.setBodyBytes(byteBuffer.array());
+                byte bodyBytes[]=new byte[byteBuffer.position()];
+                System.arraycopy(byteBuffer.array(),0,bodyBytes,0,bodyBytes.length);
+                originalData.setBodyBytes(bodyBytes);
             } else if (bodyLength == 0) {
                 originalData.setBodyBytes(new byte[0]);
                 if (mRemainingBuf != null) {
@@ -104,7 +110,25 @@ public class ReaderImpl extends AbsReader {
             mStateSender.sendBroadcast(IOAction.ACTION_READ_COMPLETE, originalData);
         } catch (Exception e) {
             ReadException readException = new ReadException(e);
+            e.printStackTrace();
             throw readException;
+        }
+    }
+
+    private void readBufferFromChanel(ByteBuffer byteBuffer) {
+        int i;
+        for (i = 0; i < byteBuffer.array().length; i++) {
+            byte[] bytes = new byte[1];
+            int value = 0;
+            try {
+                value = mInputStream.read(bytes);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (value == -1) {
+                break;
+            }
+            byteBuffer.put(bytes);
         }
     }
 
@@ -121,6 +145,7 @@ public class ReaderImpl extends AbsReader {
     }
 
     private void readBodyFromChannel(ByteBuffer byteBuffer) throws IOException {
+        int bodyRealLength=0;
         while (byteBuffer.hasRemaining()) {
             try {
                 byte[] bufArray = new byte[mOkOptions.getReadPackageBytes()];
@@ -128,7 +153,9 @@ public class ReaderImpl extends AbsReader {
                 if (len == -1) {
                     break;
                 }
+                bodyRealLength+=len;
                 int remaining = byteBuffer.remaining();
+                //System.out.println("read body len:"+len+" remaining:"+remaining+" has remaining:"+byteBuffer.hasRemaining());
                 if (len > remaining) {
                     byteBuffer.put(bufArray, 0, remaining);
                     mRemainingBuf = ByteBuffer.allocate(len - remaining);
@@ -136,6 +163,10 @@ public class ReaderImpl extends AbsReader {
                     mRemainingBuf.put(bufArray, remaining, len - remaining);
                 } else {
                     byteBuffer.put(bufArray, 0, len);
+                }
+                if (!mOkOptions.getReaderProtocol().isKnowLength()&&len!=50&&len<=remaining)
+                {
+                    break;
                 }
             } catch (Exception e) {
                 throw e;

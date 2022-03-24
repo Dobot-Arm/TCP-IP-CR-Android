@@ -13,6 +13,7 @@ public class CRMessageGetAngle extends BaseMessage {
     private static final String MESSAGE_CONTENT="GetAngle()";
     @Override
     public void constructSendData() {
+        this.REPLY_SIZE=100;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             this.messageContent=MESSAGE_CONTENT.getBytes(StandardCharsets.US_ASCII);
         }else

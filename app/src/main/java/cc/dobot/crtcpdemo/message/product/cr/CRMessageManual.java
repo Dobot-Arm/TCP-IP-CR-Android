@@ -9,11 +9,10 @@ import java.nio.charset.StandardCharsets;
 
 import cc.dobot.crtcpdemo.message.base.BaseMessage;
 
-public class CRMessageGetSixForceData extends BaseMessage {
-    private static final String MESSAGE_CONTENT="GetSixForceData()";
+public class CRMessageManual extends BaseMessage {
+    private static final String MESSAGE_CONTENT="Manual()";
     @Override
     public void constructSendData() {
-        this.REPLY_SIZE=100;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             this.messageContent=MESSAGE_CONTENT.getBytes(StandardCharsets.US_ASCII);
         }else

@@ -4,6 +4,11 @@ import android.os.Handler;
 
 import com.xuhao.didi.core.pojo.OriginalData;
 
+import org.json.JSONObject;
+
+import java.nio.charset.Charset;
+import java.text.NumberFormat;
+
 import cc.dobot.crtcpdemo.client.APIMessageClient;
 import cc.dobot.crtcpdemo.client.MessageCallback;
 import cc.dobot.crtcpdemo.client.MoveMessageClient;
@@ -116,7 +121,7 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
                         @Override
                         public void run() {
                             view.refreshEnableState(isEnable);
-                           // if (isEnable) {
+                            // if (isEnable) {
                            /*     CRMessageAccJ crMessageAccJ = (CRMessageAccJ) MessageFactory.getInstance().createMsg(CmdSet.ACC_J);
                                 CRMessageAccL crMessageAccL = (CRMessageAccL) MessageFactory.getInstance().createMsg(CmdSet.ACC_L);
                                 crMessageAccJ.setR(50);
@@ -137,7 +142,7 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
                                    /* setUser(0);
                                     setTool(0);
                                     setArmOrientation(1,1,-1,1);*/
-                          //  }
+                            //  }
                         }
                     });
                 } else
@@ -263,6 +268,7 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
                     crMessageMovJ.setPoint(point);
                     view.refreshLogList(true,crMessageMovJ.getMessageStringContent());
                     MoveMessageClient.getInstance().sendMsg(crMessageMovJ, null);
+                    isRunPath=true;
                 }
             }
         });
@@ -330,6 +336,8 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
         });
     }
 
+    boolean isRunPath = false;
+
     @Override
     public void startPathTrack(final String path) {
         BaseMessage message;
@@ -338,14 +346,42 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
         APIMessageClient.getInstance().sendMsg(message, new MessageCallback() {
             @Override
             public void onMsgCallback(MsgState state, OriginalData msg) {
+                System.out.println("start path  ENABLE_ROBOT msgState:" + state);
                 if (msg != null && state == MsgState.MSG_REPLY) {
                     view.refreshLogList(false,new String(msg.getTotalBytes()));
-                    CRMessageStartPath messageStartPath = (CRMessageStartPath) MessageFactory.getInstance().createMsg(CmdSet.START_PATH);
-                    messageStartPath.setTraceName(path);
-                    messageStartPath.setConst(1);
-                    messageStartPath.setCart(1);
-                    view.refreshLogList(true,messageStartPath.getMessageStringContent());
                     MoveMessageClient.getInstance().sendMsg(messageStartPath, null);
+                    CRMessageGetPathStartPose crMessageGetPathStartPose = (CRMessageGetPathStartPose) MessageFactory.getInstance().createMsg(CmdSet.GET_PATH_START_POSE);
+                    crMessageGetPathStartPose.setTraceName(path);
+                    view.refreshLogList(true,crMessageGetPathStartPose.getMessageStringContent());
+
+                    APIMessageClient.getInstance().sendMsg(crMessageGetPathStartPose, new MessageCallback() {
+                        @Override
+                        public void onMsgCallback(MsgState state, OriginalData msg) {
+                            System.out.println("get path start pose:" + state);
+                            if (state == MsgState.MSG_REPLY) {
+                                view.refreshLogList(false,new String(msg.getTotalBytes()));
+                                String pathStartPoseStr = new String(msg.getTotalBytes(), Charset.forName("US-ASCII"));
+                                CRMessageJointMovJ crMessageJointMovJ = (CRMessageJointMovJ) MessageFactory.getInstance().createMsg(CmdSet.JOINT_MOV_J);
+                                crMessageJointMovJ.setMessageStringContent("JointMovJ(" + pathStartPoseStr.substring(1, pathStartPoseStr.length() - 1) + ")");
+                                crMessageJointMovJ.setMessageContent(crMessageJointMovJ.getMessageStringContent().getBytes(Charset.forName("US-ASCII")));
+                                view.refreshLogList(true,crMessageJointMovJ.getMessageStringContent());
+                                MoveMessageClient.getInstance().sendMsg(crMessageJointMovJ, null);
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        isRunPath = true;
+                                        CRMessageStartPath messageStartPath = (CRMessageStartPath) MessageFactory.getInstance().createMsg(CmdSet.START_PATH);
+                                        messageStartPath.setTraceName(path);
+                                        messageStartPath.setConst(0);
+                                        messageStartPath.setCart(0);
+                                        view.refreshLogList(true,messageStartPath.getMessageStringContent());
+                                        MoveMessageClient.getInstance().sendMsg(messageStartPath, null);
+                                    }
+                                }, 3000);
+                            }
+                        }
+                    });
+                    /*    */
                 }
             }
         });
@@ -378,7 +414,7 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
 
     @Override
     public void setJogMove(boolean isCoordinate, int pos) {
-        String jogStr;
+        final String jogStr;
         switch (pos) {
             case 0:
                 jogStr = !isCoordinate ? "j1+" : "x+";
@@ -419,11 +455,30 @@ public class MainPresent implements MainContract.Present, StateMessageClient.Sta
             default:
                 jogStr = "";
         }
-
-        CRMessageMoveJog msg = (CRMessageMoveJog) MessageFactory.getInstance().createMsg(CmdSet.MOVE_JOG);
-        msg.setAxisID(jogStr);
-        view.refreshLogList(true,msg.getMessageStringContent());
-        MoveMessageClient.getInstance().sendMsg(msg, null);
+        if (isRunPath) {
+            BaseMessage message;
+            message = (BaseMessage) MessageFactory.getInstance().createMsg(CmdSet.MANUAL);
+            view.refreshLogList(true,message.getMessageStringContent());
+            APIMessageClient.getInstance().sendMsg(message, new MessageCallback() {
+                        @Override
+                        public void onMsgCallback(MsgState state, OriginalData originalData) {
+                            System.out.println("JOG MANUAL msgState:" + state);
+                            if (state == MsgState.MSG_REPLY) {
+                                CRMessageMoveJog msg = (CRMessageMoveJog) MessageFactory.getInstance().createMsg(CmdSet.MOVE_JOG);
+                                msg.setAxisID(jogStr);
+                                view.refreshLogList(true,msg.getMessageStringContent());
+                                MoveMessageClient.getInstance().sendMsg(msg, null);
+                            }
+                        }
+                    }
+            );
+            isRunPath = false;
+        } else {
+            CRMessageMoveJog msg = (CRMessageMoveJog) MessageFactory.getInstance().createMsg(CmdSet.MOVE_JOG);
+            msg.setAxisID(jogStr);
+            view.refreshLogList(true,msg.getMessageStringContent());
+            MoveMessageClient.getInstance().sendMsg(msg, null);
+        }
 
     }
 

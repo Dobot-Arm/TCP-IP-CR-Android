@@ -192,7 +192,8 @@
 
             <EditText
                 android:id="@+id/trace_file_path"
-                android:layout_width="80dp"
+                android:text="button_drag_track.json"
+                android:layout_width="240dp"
                 android:layout_height="wrap_content" />
 
             <Button

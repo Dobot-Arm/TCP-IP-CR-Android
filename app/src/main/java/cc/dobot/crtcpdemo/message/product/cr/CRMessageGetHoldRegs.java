@@ -17,6 +17,7 @@ public class CRMessageGetHoldRegs extends BaseMessage {
     private String type=null;
     @Override
     public void constructSendData() {
+        this.REPLY_SIZE=100;
         this.messageStrContent=("GetHoldRegs("+id+","+addr+","+count);
         if (type!=null)
         {

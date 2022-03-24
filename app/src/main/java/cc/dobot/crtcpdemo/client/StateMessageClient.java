@@ -55,6 +55,10 @@ public class StateMessageClient extends TcpClient {
                 //     System.out.println("bodylength:" + TransformUtils.byteToShort(headParams.getCmdLength()));
                 return 1438;//*header.length*//*TcpClient.this.BODY_LENGTH;
             }
+            @Override
+            public boolean isKnowLength() {
+                return true;
+            }
         };
         this.state = new RobotState();
 

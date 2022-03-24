@@ -40,6 +40,13 @@ public final class OriginalData implements Serializable {
         return mTotalBytes;
     }
 
+    public byte[]getSubTotalData(int start,int end){
+        if (mTotalBytes==null)
+            mTotalBytes=getTotalBytes();
+        byte[] subData =new byte[end-start];
+        System.arraycopy(mTotalBytes,start,subData,0,subData.length);
+        return subData;
+    }
     public byte[]getSubBodyData(int start,int end){
         byte[] subData =new byte[end-start];
         System.arraycopy(mBodyBytes,start,subData,0,subData.length);

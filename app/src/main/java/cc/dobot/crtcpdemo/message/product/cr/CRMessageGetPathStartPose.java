@@ -14,16 +14,16 @@ public class CRMessageGetPathStartPose extends BaseMessage {
     private String traceName="";
     @Override
     public void constructSendData() {
+        this.REPLY_SIZE=100;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            this.messageContent=("GetTraceStartPose("+traceName+")").getBytes(StandardCharsets.US_ASCII);
+            this.messageContent=("GetPathStartPose("+traceName+")").getBytes(StandardCharsets.US_ASCII);
         }else
-            this.messageContent=("GetTraceStartPose("+traceName+")").getBytes( Charset.forName("US-ASCII"));
-        this.messageStrContent=("GetTraceStartPose("+traceName+")");
+            this.messageContent=("GetPathStartPose("+traceName+")").getBytes( Charset.forName("US-ASCII"));
+        this.messageStrContent=("GetPathStartPose("+traceName+")");
     }
 
     @Override
     public void transformReceiveData2Object(OriginalData data) {
-
         this.messageContent=data.getBodyBytes();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             this.messageStrContent = new String(data.getBodyBytes(), StandardCharsets.US_ASCII);

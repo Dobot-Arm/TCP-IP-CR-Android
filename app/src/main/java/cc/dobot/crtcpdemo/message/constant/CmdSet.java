@@ -22,4 +22,9 @@ public interface CmdSet {
     String ACC_L = "AccL";
     String ROBOT_MODE = "RobotMode";
     String STOP_SCRIPT = "StopScript";
+    String GET_POSE = "GetPose";
+    String GET_PATH_START_POSE = "GetPathStartPose";
+    String JOINT_MOV_J = "JointMovJ";
+    String AUTO="Auto";
+    String MANUAL="Manual";
 }
